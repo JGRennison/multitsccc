@@ -1,0 +1,52 @@
+#!/usr/bin/perl
+
+############################################################################
+##  multitsccc_hls
+##
+##  Multi TS Continuity Counter Corrector: HLS
+##  This program executes multitsccc on the contents of HLS manifests.
+##
+##  This program is free software; you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation; either version 2 of the License, or
+##  (at your option) any later version. See: COPYING-GPL.txt
+##
+##  This program  is distributed in the  hope that it will  be useful, but
+##  WITHOUT   ANY  WARRANTY;   without  even   the  implied   warranty  of
+##  MERCHANTABILITY  or FITNESS  FOR A  PARTICULAR PURPOSE.   See  the GNU
+##  General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License
+##  along with this program. If not, see <http:##www.gnu.org/licenses/>.
+##
+##  2014 - Jonathan G Rennison <j.g.rennison@gmail.com>
+############################################################################
+
+use strict;
+use warnings;
+use File::Slurp;
+use File::Spec;
+use File::Basename;
+
+if(scalar @ARGV == 0) {
+	print STDERR "Usage: $0 HLS_manifest_1 [HLS_manifest_2] ...\n";
+	print STDERR "This executes multitsccc on the contents of each HLS manifest\n";
+	exit 1;
+}
+
+my @args = (File::Spec->rel2abs("multitsccc", dirname(__FILE__)));
+
+foreach(@ARGV) {
+	my $manifest_dir = dirname($_);
+	foreach(read_file($_, binmode => ':utf8')) {
+		s/^\s+//;
+		s/\s+$//;
+		next if(/^#/);
+		if(/^https?:\/\//) {
+			die("This tool cannot be used with manifests containing HTTP URLs");
+		}
+		push @args, File::Spec->rel2abs($_, $manifest_dir);
+	}
+}
+
+system(@args) == 0 or die("Execution failed: " . $args[0]);
