@@ -22,8 +22,11 @@ https://github.com/JGRennison/multitsccc
 
 ### Building
 Should build out of the box with `make` and `make install`.  
-Requires a relatively recent gcc (4.7.1 or later).  
+Requires a relatively recent gcc with C++11 support (4.7 or later).  
 Requires a POSIX/*nix OS. Does not support Windows.  
+
+### Credits
+This program is in part inspired by/loosely based on the Opencaster tsfixcc utility.  
 
 ### License
 GPLv2  
